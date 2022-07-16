@@ -1,44 +1,77 @@
-import axios from "axios";
-
-const defaultHeaders = {
-  "Content-Type": "application/json",
-  Accept: "application/json",
-};
+import { supabase } from "../config/supabase";
+import { definitions } from "../types/supabase";
 
 export default class AuthAPI {
-  private api: any;
-
-  constructor() {
-    this.api = axios.create({
-      baseURL: process.env.REACT_APP_AUTH_API_BASE_URL,
-      headers: defaultHeaders,
-    });
-  }
-
   signUp = async (email: string, username: string, password: string) => {
     try {
-      const data = await this.api.post("/signUp", {
+      const { user, session, error } = await supabase.auth.signUp({
         email,
-        username,
         password,
       });
-
-      return data;
-    } catch (err) {
-      console.log({ err });
+      return { user, session, error };
+    } catch (error) {
+      console.log({ error });
     }
   };
 
   login = async (email: string, password: string) => {
     try {
-      const data = await this.api.post("/login", {
+      const { user, session, error } = await supabase.auth.signIn({
         email,
         password,
       });
+      console.log({ user, session });
+      return { user, session, error };
+    } catch (error) {
+      console.log({ error });
+    }
+  };
 
-      return data;
-    } catch (err) {
-      console.log({ err });
+  signOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      return error;
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
+  updateCurrentUser = async (name: string | null = null) => {
+    const user = supabase.auth.user();
+    const { id } = user ?? {};
+
+    if (!name) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ name })
+        .eq("id", id);
+
+      return { data, error };
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
+  fetchCurrentUser = async () => {
+    const currentUser = supabase.auth.user();
+    const { id } = currentUser ?? {};
+
+    try {
+      const { data: user, error } = await supabase
+        .from<definitions["users"]>("users")
+        .select(
+          `organizations (
+        name
+        ), belongs_to_organization, id, email, name`
+        )
+        .eq("id", id);
+
+      if (error) return null;
+      return user?.[0];
+    } catch (error) {
+      console.log({ error });
     }
   };
 }

@@ -1,20 +1,12 @@
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useStore } from "../store";
 
 export const Navigation = () => {
-  const { authStore } = useStore();
+  // const { authStore } = useStore();
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        margin: 100,
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
+    <div className="flex flex-row m-100 content-center justify-center">
       <Link href="/">
         <div style={{ cursor: "pointer", margin: 20 }}>HOME</div>
       </Link>
