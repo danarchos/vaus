@@ -4,6 +4,7 @@ import { definitions } from "../types/supabase";
 export default class AuthAPI {
   signUp = async (email: string, username: string, password: string) => {
     try {
+      console.log("called this");
       const { user, session, error } = await supabase.auth.signUp({
         email,
         password,

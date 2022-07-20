@@ -18,11 +18,12 @@ export default class AuthStore {
    */
   async signUp(email: string, username: string, password: string) {
     try {
-      const data = await this._store.api.authAPI.signUp(
+      const { user } = await this._store.api.authAPI.signUp(
         email,
         username,
         password
       );
+      this.currentUser = user;
     } catch (err) {
       console.log("Error signing up user", username);
     }
@@ -33,7 +34,8 @@ export default class AuthStore {
    */
   async login(email: string, password: string) {
     try {
-      const data = await this._store.api.authAPI.login(email, password);
+      const { user } = await this._store.api.authAPI.login(email, password);
+      this.currentUser = user;
     } catch (err) {
       console.log("Error logging in user", email);
     }
@@ -45,5 +47,11 @@ export default class AuthStore {
     } catch (err) {
       console.log({ err });
     }
+  }
+
+  async setUser(user: any) {
+    runInAction(() => {
+      this.currentUser = user;
+    });
   }
 }

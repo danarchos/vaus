@@ -4,20 +4,15 @@ import { useEffect, useState } from "react";
 import { Navigation } from "../components/Navigation";
 import { Auth } from "../components/Auth";
 import { supabase } from "../config/supabase";
+import { useStore } from "../store";
 
 const Home: NextPage = () => {
   const [session, setSession] = useState<null | any>(null);
+  const { authStore } = useStore();
 
   useEffect(() => {
     const session = supabase.auth.session();
-
-    if (session) {
-      setSession(session);
-    }
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session as any);
-    });
+    if (session) authStore.setUser(session.user);
   }, []);
 
   return (
